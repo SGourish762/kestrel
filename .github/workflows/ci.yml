@@ -1,0 +1,42 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        cc: [gcc, clang]
+        exclude:
+          - os: macos-latest
+            cc: gcc   # gcc on macOS is an alias for clang
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: build (-Wall -Wextra -Wconversion -Werror)
+        run: make CC=${{ matrix.cc }} all
+      - name: unit + integration tests
+        run: make CC=${{ matrix.cc }} test
+      - name: simulate 5 s with fault injection
+        run: ./build/kestrel --duration 5 --faults 0.01
+      - name: replay sample capture
+        run: ./build/kestrel --replay data/sample.candump --fast --truth
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [asan, tsan]
+    steps:
+      - uses: actions/checkout@v4
+      - name: ${{ matrix.target }}
+        run: make CC=clang ${{ matrix.target }}
+
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make bench

@@ -1,0 +1,26 @@
+
+== kestrel report ==============================================
+mode            simulation (real-time priority)
+wall time       30.02 s
+frames          9497 processed, 316 frames/s, 0 ring-full, max depth 1
+latency (rx->fused)  p50 14.72 us | p99 33.28 us | p99.9 52.73 us | max 65.45 us
+processing cost      p50 229 ns | p99 903 ns per frame
+
+scheduler (RM, utilization 0.0064 vs Liu-Layland bound 0.7568 -> schedulable)
+  task             runs    jit p50    jit p99    jit max  misses
+  WHEEL_SPEEDS     3000      0.2us      0.8us     58.2us       0
+  IMU              6000      0.4us      1.6us    464.4us       0
+  BATTERY           300      0.3us      9.3us     34.9us       0
+  GPS               300      0.3us      0.5us      3.1us       0
+
+integrity
+  CRC errors      105 detected / 105 injected
+  lost frames     202 detected via alive counter
+  repeats 0 | unknown IDs 0 | bad DLC 0 | timeouts 0
+
+fusion
+  wheel updates   2940 accepted, 0 rejected by NIS gate (79 slips injected)
+  GPS updates     285 accepted, 9 rejected by NIS gate (9 glitches injected)
+  velocity RMSE   0.019 m/s fused vs 0.573 m/s raw wheel sensor (29.5x better)
+  position RMSE   0.204 m (GPS noise sigma 1.0 m)
+================================================================
