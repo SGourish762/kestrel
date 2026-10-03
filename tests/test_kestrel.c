@@ -407,8 +407,15 @@ static void test_sched(void) {
     CHECK_NEAR(kt_utilization(t, 2), 0.0006, 1e-9);
     kt_sched s = { t, 2, 50000 };
     kt_sched_run(&s, 200000000ull, NULL); /* 200 ms */
-    CHECK(a >= 85 && a <= 101); /* loose: CI runners are noisy VMs */
-    CHECK(b >= 17 && b <= 21);
+    /* Every period is either run or explicitly counted as skipped, so this
+     * holds exactly even on an overloaded CI VM (macOS runners oversleep). */
+    uint64_t fast_periods = t[0].runs + t[0].skipped_periods;
+    uint64_t slow_periods = t[1].runs + t[1].skipped_periods;
+    CHECK(fast_periods >= 98 && fast_periods <= 101);
+    CHECK(slow_periods >= 19 && slow_periods <= 21);
+    CHECK_EQ(a, t[0].runs);
+    CHECK_EQ(b, t[1].runs);
+    CHECK(a >= 50); /* sanity: the loop actually ran most periods */
 }
 
 /* ---------------- threaded engine smoke test ---------------- */
