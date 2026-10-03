@@ -15,7 +15,7 @@ jobs:
             cc: gcc   # gcc on macOS is an alias for clang
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: build (-Wall -Wextra -Wconversion -Werror)
         run: make CC=${{ matrix.cc }} all
       - name: unit + integration tests
@@ -31,12 +31,12 @@ jobs:
       matrix:
         target: [asan, tsan]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: ${{ matrix.target }}
         run: make CC=clang ${{ matrix.target }}
 
   bench:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: make bench

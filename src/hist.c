@@ -32,7 +32,7 @@ uint64_t kh_bucket_high(unsigned idx) {
 void kh_record(kh_hist *h, uint64_t v) {
     h->counts[kh_bucket_of(v)]++;
     h->total++;
-    h->sum += v;
+    h->sum += (long double)v;
     if (v < h->min) h->min = v;
     if (v > h->max) h->max = v;
 }
@@ -66,5 +66,5 @@ uint64_t kh_percentile(const kh_hist *h, double p) {
 }
 
 double kh_mean(const kh_hist *h) {
-    return h->total ? (double)(h->sum / h->total) : 0.0;
+    return h->total ? (double)(h->sum / (long double)h->total) : 0.0;
 }
